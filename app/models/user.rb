@@ -33,4 +33,13 @@ class User < ActiveRecord::Base
     new({twitter_user_id: params['id'],
       screen_name: params['screen_name']})
   end
+
+  def sync_statuses
+    statuses = Status.fetch_statuses_for_user(self)
+    statuses.each do |status|
+      unless status.persisted?
+        status.save!
+      end
+    end
+  end
 end
